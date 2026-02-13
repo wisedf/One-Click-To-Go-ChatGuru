@@ -2,8 +2,13 @@
 import { z } from 'zod';
 
 export const authSchema = z.object({
-  name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(100),
-  email: z.string().email("E-mail inválido"),
+  name: z.string()
+    .min(3, "Nome deve ter no mínimo 3 caracteres")
+    .max(300, "Nome deve ter no máximo 300 caracteres")
+    .refine((val) => val.trim().split(/\s+/).length >= 2, {
+      message: "Por favor, digite seu nome completo (nome e sobrenome)"
+    }),
+  email: z.string().email("Por favor, digite um e-mail válido"),
   password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
   confirmPwd: z.string()
 }).refine((data) => data.password === data.confirmPwd, {
@@ -17,7 +22,7 @@ export const verifySchema = z.object({
     .max(300, "O nome da empresa deve ter no máximo 300 caracteres"),
   phone: z.string().regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Formato inválido. Use (99) 99999-9999"),
   agreed: z.literal(true, {
-    errorMap: () => ({ message: "Você deve aceitar os termos para continuar" }),
+    message: "Você deve aceitar os termos para continuar",
   }),
 });
 
