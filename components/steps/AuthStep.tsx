@@ -81,10 +81,21 @@ export const AuthStep: React.FC = () => {
       const user = decodeJwt(token);
       if (user) {
         setMode("google");
+        
+        // Tentativa de extrair nome da empresa se for conta G Suite/Workspace (claim 'hd')
+        let companyNameGuess = null;
+        if (user.hd) {
+          // Ex: 'chatguru.com.br' -> 'Chatguru'
+          const domainPart = user.hd.split('.')[0];
+          // Capitaliza a primeira letra
+          companyNameGuess = domainPart.charAt(0).toUpperCase() + domainPart.slice(1);
+        }
+
         updateData({ 
           authMethod: "google", 
           name: user.name, 
-          email: user.email 
+          email: user.email,
+          companyName: companyNameGuess
         });
         setCaptchaChecked(false); // Reset para validação extra se necessário
       }
