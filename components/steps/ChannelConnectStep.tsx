@@ -4,22 +4,40 @@ import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
 import { ChatBubble } from '../ui/ChatBubble';
 
-const QRCode: React.FC = () => {
+// QRCode accepts a seed to generate different patterns on reload
+const QRCode: React.FC<{ seed?: number }> = ({ seed = 0 }) => {
   const size = 180; 
   const cells = 21; 
   const cs = size / cells;
-  const [pattern] = useState(() => {
+  
+  // Memoize pattern based on seed to ensure stability unless seed changes
+  const [pattern, setPattern] = useState<{x: number, y: number}[]>([]);
+
+  useEffect(() => {
     const p = [];
-    for (let i = 0; i < cells; i++) for (let j = 0; j < cells; j++)
-      if ((i < 7 && j < 7) || (i < 7 && j >= cells - 7) || (i >= cells - 7 && j < 7) || Math.random() > 0.55)
-        p.push({ x: j * cs, y: i * cs });
-    return p;
-  });
+    // Simple pseudo-random generator based on seed
+    const random = () => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    for (let i = 0; i < cells; i++) {
+      for (let j = 0; j < cells; j++) {
+        // Always draw corners (finder patterns)
+        const isCorner = (i < 7 && j < 7) || (i < 7 && j >= cells - 7) || (i >= cells - 7 && j < 7);
+        // Randomize the rest
+        if (isCorner || Math.random() > 0.55) {
+          p.push({ x: j * cs, y: i * cs });
+        }
+      }
+    }
+    setPattern(p);
+  }, [seed]);
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rounded-xl">
-      <rect width={size} height={size} fill="white" rx="12" />
-      {pattern.map((c, i) => <rect key={i} x={c.x} y={c.y} width={cs - 0.5} height={cs - 0.5} fill="#1B3D2F" rx={1.5} />)}
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rounded-sm">
+      <rect width={size} height={size} fill="white" rx="4" />
+      {pattern.map((c, i) => <rect key={i} x={c.x} y={c.y} width={cs - 0.5} height={cs - 0.5} fill="#1B3D2F" rx={1} />)}
     </svg>
   );
 };
@@ -64,9 +82,13 @@ export const ChannelConnectStep: React.FC = () => {
   const [messages, setMessages] = useState<{text: string, from: 'system'|'bot'}[]>([]);
   const [offerPulse, setOfferPulse] = useState(true);
 
+  // QR Code Logic States
+  const [qrSeed, setQrSeed] = useState(1);
+  const [isReloadingQr, setIsReloadingQr] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("Aguardando leitura...");
+
   // Tutorial State
   const [tutorialDevice, setTutorialDevice] = useState<'android'|'iphone'>('android');
-  // Alterado para true para aparecer aberto por padrão
   const [showTutorial, setShowTutorial] = useState(true);
 
   // Constants matching prototype
@@ -135,20 +157,41 @@ export const ChannelConnectStep: React.FC = () => {
     }
   }, [currentStep, wabaPhase]);
 
-  // QR Code Logic
+  // Dynamic Status Text Simulation
+  useEffect(() => {
+    if (connected || isReloadingQr) return;
+    
+    const statuses = [
+      "Aguardando leitura...",
+      "Sincronizando...",
+      "Verificando criptografia...",
+      "Estabelecendo conexão segura..."
+    ];
+    let i = 0;
+    
+    const interval = setInterval(() => {
+      i = (i + 1) % statuses.length;
+      setConnectionStatus(statuses[i]);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [connected, isReloadingQr]);
+
+  // QR Code Connection Logic
   useEffect(() => {
     if (currentStep !== 'connect') return;
     
     const channel = data.channel;
     const needsQR = channel === "web" || channel === "both";
     
-    if ((!needsQR && wabaPhase !== "qr") || connected) return;
+    if ((!needsQR && wabaPhase !== "qr") || connected || isReloadingQr) return;
 
     if (needsQR || wabaPhase === "qr") {
-      const t = setTimeout(() => setConnected(true), 15000); // 15 seconds to simulate user fumbling with phone
+      // 15 seconds to simulate user fumbling with phone, resets if reloaded
+      const t = setTimeout(() => setConnected(true), 15000); 
       return () => clearTimeout(t);
     }
-  }, [currentStep, data.channel, wabaPhase, connected]);
+  }, [currentStep, data.channel, wabaPhase, connected, isReloadingQr]); // Depends on isReloadingQr to reset timer
 
   // Messages after connection
   useEffect(() => {
@@ -189,6 +232,18 @@ export const ChannelConnectStep: React.FC = () => {
   const declineWebOffer = () => {
     setWabaPhase("skip");
     updateData({ hasWebNumber: false });
+  };
+
+  const reloadQrCode = () => {
+    setIsReloadingQr(true);
+    setConnectionStatus("Gerando novo código...");
+    
+    // Simulate API delay
+    setTimeout(() => {
+      setQrSeed(prev => prev + 1);
+      setIsReloadingQr(false);
+      setConnectionStatus("Aguardando leitura...");
+    }, 1500);
   };
 
   // --- RENDER: SELECTION STEP ---
@@ -593,13 +648,61 @@ export const ChannelConnectStep: React.FC = () => {
       <div className="max-w-[440px] mx-auto">
         {!connected ? (
           <>
-            <div className="p-8 rounded-2xl bg-white border-[1.5px] border-[#E2EDE7] shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-center relative z-10">
-              <div className="inline-block p-4 bg-brand-greenLight rounded-2xl mb-4 border-2 border-brand-green">
-                <QRCode />
+            <div className={`p-8 rounded-2xl bg-white border-[1.5px] border-[#E2EDE7] shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-center relative z-10 transition-colors duration-500 ${isReloadingQr ? 'opacity-80' : ''}`}>
+              
+              <div className="relative inline-block p-4 bg-brand-greenLight rounded-2xl mb-4 border-2 border-brand-green overflow-hidden">
+                {/* Visual Glow Effect */}
+                <div className="absolute inset-0 bg-brand-green/5 animate-pulse z-0"></div>
+                
+                {/* QR Code */}
+                <div className={`relative z-10 transition-all duration-300 ${isReloadingQr ? 'blur-sm scale-95' : ''}`}>
+                  <QRCode seed={qrSeed} />
+                </div>
+
+                {/* Scan Line Animation - Active Scan Effect */}
+                {!isReloadingQr && (
+                  <div className="absolute top-0 left-0 w-full h-[30%] bg-gradient-to-b from-transparent via-brand-green/40 to-transparent z-20 animate-[scan_2.5s_linear_infinite] pointer-events-none border-b-2 border-brand-green/60"></div>
+                )}
+                
+                {/* Loading Overlay */}
+                {isReloadingQr && (
+                  <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/50 backdrop-blur-[2px]">
+                     <div className="w-8 h-8 border-4 border-brand-green/30 border-t-brand-green rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
-              <div className="text-[13px] text-brand-textMuted flex items-center justify-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-brand-pastelOrange animate-pulse-slow" /> Aguardando leitura...
+
+              {/* Status Text Area */}
+              <div className="flex flex-col items-center justify-center gap-2 min-h-[50px]">
+                <div className="text-[13px] text-brand-textMuted flex items-center justify-center gap-2 font-medium">
+                   {isReloadingQr ? (
+                     <span>Gerando novo código...</span>
+                   ) : (
+                     <>
+                        <div className="w-2 h-2 rounded-full bg-brand-green animate-pulse" /> 
+                        <span className="animate-fade-in" key={connectionStatus}>{connectionStatus}</span>
+                     </>
+                   )}
+                </div>
+
+                <button 
+                  onClick={reloadQrCode}
+                  disabled={isReloadingQr}
+                  className="text-[11px] text-brand-green font-semibold hover:text-brand-greenDark underline decoration-dotted transition-colors flex items-center gap-1"
+                >
+                  <span>↻</span> Gerar novo QR Code
+                </button>
               </div>
+
+              {/* Scan Animation Styles */}
+              <style>{`
+                @keyframes scan {
+                  0% { top: -30%; opacity: 0; }
+                  20% { opacity: 1; }
+                  80% { opacity: 1; }
+                  100% { top: 100%; opacity: 0; }
+                }
+              `}</style>
             </div>
 
             {/* How to scan Accordion/Section */}
@@ -644,7 +747,7 @@ export const ChannelConnectStep: React.FC = () => {
                               <div className="h-1 bg-brand-green w-full rounded"></div>
                               <div className="h-1 bg-gray-200 w-full rounded"></div>
                           </div>
-                          {/* Scan Line */}
+                          {/* Scan Line Phone */}
                           <div className="absolute top-0 left-0 w-full h-1 bg-brand-green/50 shadow-[0_0_10px_#2DD4A0] animate-[slideDown_2s_linear_infinite]"></div>
                        </div>
 
