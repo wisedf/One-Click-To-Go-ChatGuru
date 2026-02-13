@@ -75,6 +75,7 @@ export const AuthStep: React.FC = () => {
 
   const handleGoogleAuth = () => {
     setMode("google");
+    setCaptchaChecked(false); // Reset captcha for security check
     updateData({ authMethod: "google", name: "Fabrício Silva", email: "fabricio@empresa.com.br" });
   };
 
@@ -142,7 +143,30 @@ export const AuthStep: React.FC = () => {
             </div>
             <div className="text-xs text-brand-greenMid font-semibold">✓ Autenticado com Google</div>
           </ChatBubble>
-          <Button onClick={nextStep}>Continuar →</Button>
+
+          {/* Captcha Security Check for Google Auth */}
+          <div className={`mb-5 p-3.5 rounded-xl border-2 bg-brand-offWhite flex items-center justify-between ${!captchaChecked ? 'border-[#E2EDE7]' : 'border-brand-green/50'}`}>
+            <div className="flex items-center gap-3">
+              <div 
+                onClick={!captchaChecked ? handleCaptcha : undefined} 
+                className={`w-6 h-6 rounded flex items-center justify-center transition-all duration-300
+                  ${captchaChecked ? 'bg-brand-green border-brand-green cursor-default' : 'bg-white border-2 border-[#C5D0CA] cursor-pointer'}
+                `}
+              >
+                 {captchaLoading ? (
+                  <div className="w-3.5 h-3.5 border-2 border-[#C5D0CA] border-t-brand-green rounded-full animate-spin" />
+                ) : captchaChecked ? (
+                  <span className="text-white text-sm font-bold">✓</span>
+                ) : null}
+              </div>
+              <span className="text-[13px] text-brand-text">Não sou um robô</span>
+            </div>
+            <div className="text-right">
+              <div className="text-[8px] text-brand-textLight">reCAPTCHA</div>
+            </div>
+          </div>
+
+          <Button onClick={nextStep} disabled={!captchaChecked}>Continuar →</Button>
         </div>
       )}
 

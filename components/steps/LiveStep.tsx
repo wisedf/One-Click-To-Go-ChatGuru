@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { NICHE_CONFIGS } from '../../constants';
@@ -19,7 +20,7 @@ const Icons = {
 };
 
 export const LiveStep: React.FC = () => {
-  const { data } = useOnboarding();
+  const { data, resetOnboarding } = useOnboarding();
   const niche = data.niche || "servicos";
   const companyName = data.companyName || "Minha Empresa";
   const cfg = NICHE_CONFIGS[niche];
@@ -185,398 +186,415 @@ export const LiveStep: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-gray-100 font-sans text-xs md:text-sm animate-fade-in absolute top-0 left-0 z-50">
-       {/* Confetti Modal */}
-       {showConfetti && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 pointer-events-auto backdrop-blur-[1px]">
-          <div className="bg-white rounded-lg p-8 text-center shadow-2xl animate-fade-in max-w-sm mx-4 border-t-4 border-[#2DD4A0]">
-            <div className="text-5xl mb-3">🎉</div>
-            <div className="text-xl font-bold text-[#1B3D2F] mb-1.5">Atendimento Iniciado!</div>
-            <p className="text-sm text-gray-500 mb-6">Você sentiu a rapidez? É assim que o ChatGuru funciona no dia a dia.</p>
-            <button onClick={() => setShowConfetti(false)} className="px-6 py-2 bg-[#2DD4A0] hover:bg-[#25b588] text-white font-semibold rounded text-sm transition-colors">Continuar</button>
-          </div>
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-gray-100 font-sans text-xs md:text-sm animate-fade-in absolute top-0 left-0 z-50">
+      
+      {/* Simulation Reset Bar */}
+      <div className="w-full h-[40px] bg-[#1B3D2F] flex items-center justify-between px-5 flex-shrink-0 shadow-md z-[60]">
+        <div className="flex items-center gap-3 text-white">
+          <span className="text-brand-green font-bold tracking-wider text-[10px] uppercase border border-brand-green px-1.5 py-0.5 rounded">Ambiente de Demonstração</span>
+          <span className="text-xs text-brand-greenLight opacity-80 hidden sm:inline-block">Você está visualizando uma simulação interativa da plataforma.</span>
         </div>
-      )}
-
-      {/* LEFT SIDEBAR (Dark) */}
-      <div className={`w-[50px] ${colors.sidebar} flex flex-col items-center py-3 gap-2 flex-shrink-0 z-20`}>
-          <div className="w-8 h-8 rounded mb-2 flex items-center justify-center bg-white/10 p-1.5">
-             <img src="https://chatguru.com.br/wp-content/themes/chatguru-3/assets/img/logo.svg" className="w-full h-full object-contain filter brightness-0 invert" alt="CG" />
-          </div>
-          
-          {[
-            { icon: "⚡", active: false },
-            { icon: "💬", active: true },
-            { icon: "📅", active: false },
-            { icon: "👥", active: false },
-            { icon: "📢", active: false },
-            { icon: "📊", active: false },
-            { icon: "🏷️", active: false },
-            { icon: "⚙️", active: false }
-          ].map((item, i) => (
-            <div 
-            key={i} 
-            className={`w-full h-[40px] flex items-center justify-center cursor-pointer text-lg transition-colors relative
-              ${item.active ? colors.sidebarIconActive : `${colors.sidebarIcon} hover:text-white hover:bg-[#3b4146]`}
-            `}
-            >
-              {item.icon}
-            </div>
-          ))}
-          <div className="mt-auto mb-2 text-[#8a9095] text-lg cursor-pointer">🎧</div>
+        <button 
+          onClick={resetOnboarding}
+          className="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-brand-green transition-colors opacity-90 hover:opacity-100"
+        >
+          <span className="text-sm">↺</span> <span>Reiniciar Processo</span>
+        </button>
       </div>
 
-      <div className="flex flex-1 flex-col h-full overflow-hidden">
-        {/* TOP HEADER */}
-        <div className={`h-[50px] ${colors.header} flex items-center justify-between px-4 flex-shrink-0 z-10 shadow-sm`}>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold border border-gray-300">
-              {fullName[0].toUpperCase()}
+      <div className="flex flex-1 overflow-hidden relative w-full">
+        {/* Confetti Modal */}
+        {showConfetti && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 pointer-events-auto backdrop-blur-[1px]">
+            <div className="bg-white rounded-lg p-8 text-center shadow-2xl animate-fade-in max-w-sm mx-4 border-t-4 border-[#2DD4A0]">
+              <div className="text-5xl mb-3">🎉</div>
+              <div className="text-xl font-bold text-[#1B3D2F] mb-1.5">Atendimento Iniciado!</div>
+              <p className="text-sm text-gray-500 mb-6">Você sentiu a rapidez? É assim que o ChatGuru funciona no dia a dia.</p>
+              <button onClick={() => setShowConfetti(false)} className="px-6 py-2 bg-[#2DD4A0] hover:bg-[#25b588] text-white font-semibold rounded text-sm transition-colors">Continuar</button>
             </div>
-            <span className="text-[13px] font-medium text-gray-700">
-              {fullName} <span className="text-gray-300 mx-1">|</span> {companyName}
-            </span>
           </div>
-          
-          <div className="flex items-center gap-4 text-gray-500">
-            <span className="cursor-pointer text-[#25D366]"><Icons.Whatsapp /></span> 
-            <div className="relative cursor-pointer hover:text-gray-700">
-              <Icons.Bell />
-              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full">2</span>
-            </div>
-            <span className="cursor-pointer hover:text-gray-700"><Icons.Send /></span>
-            <span className="cursor-pointer hover:text-gray-700 text-lg">◑</span>
-            <span className="cursor-pointer hover:text-red-500 text-lg">✕</span>
-          </div>
-        </div>
+        )}
 
-        <div className="flex flex-1 overflow-hidden">
-          {/* CONTACT LIST PANEL */}
-          <div className={`w-[320px] ${colors.panelBg} border-r ${colors.panelBorder} flex flex-col flex-shrink-0`}>
-            {/* Search */}
-            <div className="p-3 border-b border-gray-100">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Icons.Search /></span>
-                <input 
-                  className="w-full bg-[#f0f2f5] text-gray-700 text-[12px] py-2 pl-9 pr-8 rounded border border-transparent focus:bg-white focus:border-[#2DD4A0] outline-none transition-all placeholder-gray-400"
-                  placeholder="Pesquisar mensagem" 
-                />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer text-[#2DD4A0]">
-                  <Icons.User />
-                </span>
-              </div>
-            </div>
-
-            {/* Filters (Mocked to match screenshot) */}
-            <div className="p-3 bg-white border-b border-gray-200 text-[11px] flex flex-col gap-2 overflow-y-auto max-h-[220px]">
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center relative">
-                  <span className="font-medium">Nome:</span> <div className="w-4 h-4 bg-red-400 rounded text-white flex items-center justify-center text-[8px] font-bold cursor-pointer">•••</div>
-                </div>
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                  <span className="font-medium">Aparelho:</span> <span className="text-[10px]">▼</span>
-                </div>
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                  <span className="font-medium">Número Whatsapp:</span>
-                </div>
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                  <span className="font-medium">Tags:</span> <span className="text-gray-400">Qualquer ▼</span>
-                </div>
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                  <span className="font-medium">Usuário/Departamento:</span> <span className="text-gray-400">Qualquer ▼</span>
-                </div>
-                <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                  <span className="font-medium">Etapa do Funil:</span>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex-1 border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                    <span className="font-medium">Status:</span> <span className="text-[10px]">▼</span>
-                  </div>
-                  <div className="flex-1 border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
-                    <span className="font-medium">Ordenar Por</span> <span className="text-[10px]">▼</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between mt-1 pt-1">
-                  <div className="flex gap-2">
-                      <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-red-400 cursor-pointer hover:bg-gray-50">✉️</div>
-                      <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-blue-400 cursor-pointer hover:bg-gray-50">💳</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-1 border border-gray-300 rounded px-1.5 h-7">
-                        <span className="text-lg leading-none">((•))</span> <input type="checkbox" className="w-3 h-3" />
-                    </div>
-                    <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-yellow-400 cursor-pointer hover:bg-gray-50">⭐</div>
-                    <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-blue-400 cursor-pointer hover:bg-gray-50">🕒</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-start text-[10px] text-gray-500 mt-1 cursor-pointer hover:text-gray-700">
-                  Esconder Filtros <span className="rotate-180 ml-1">^</span>
-                </div>
+        {/* LEFT SIDEBAR (Dark) */}
+        <div className={`w-[50px] ${colors.sidebar} flex flex-col items-center py-3 gap-2 flex-shrink-0 z-20`}>
+            <div className="w-8 h-8 rounded mb-2 flex items-center justify-center bg-white/10 p-1.5">
+              <img src="https://chatguru.com.br/wp-content/themes/chatguru-3/assets/img/logo.svg" className="w-full h-full object-contain filter brightness-0 invert" alt="CG" />
             </div>
             
-            <div className="px-3 py-1.5 text-[10px] text-gray-500 font-medium italic border-b border-gray-100 bg-gray-50">
-                Exibindo 2 resultados:
+            {[
+              { icon: "⚡", active: false },
+              { icon: "💬", active: true },
+              { icon: "📅", active: false },
+              { icon: "👥", active: false },
+              { icon: "📢", active: false },
+              { icon: "📊", active: false },
+              { icon: "🏷️", active: false },
+              { icon: "⚙️", active: false }
+            ].map((item, i) => (
+              <div 
+              key={i} 
+              className={`w-full h-[40px] flex items-center justify-center cursor-pointer text-lg transition-colors relative
+                ${item.active ? colors.sidebarIconActive : `${colors.sidebarIcon} hover:text-white hover:bg-[#3b4146]`}
+              `}
+              >
+                {item.icon}
+              </div>
+            ))}
+            <div className="mt-auto mb-2 text-[#8a9095] text-lg cursor-pointer">🎧</div>
+        </div>
+
+        <div className="flex flex-1 flex-col h-full overflow-hidden">
+          {/* TOP HEADER */}
+          <div className={`h-[50px] ${colors.header} flex items-center justify-between px-4 flex-shrink-0 z-10 shadow-sm`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold border border-gray-300">
+                {fullName[0].toUpperCase()}
+              </div>
+              <span className="text-[13px] font-medium text-gray-700">
+                {fullName} <span className="text-gray-300 mx-1">|</span> {companyName}
+              </span>
             </div>
-
-            {/* List */}
-            <div className="flex-1 overflow-y-auto bg-white">
-                
-                {/* Item 1: Customer (Active) */}
-                <div 
-                  onClick={() => setActiveChat('customer')}
-                  className={`flex gap-3 p-3 border-b border-gray-100 cursor-pointer transition-colors relative
-                    ${activeChat === 'customer' ? 'bg-[#e9eff5]' : 'hover:bg-gray-50'}
-                  `}
-                >
-                  <div className="w-10 h-10 rounded-full overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-0.5">
-                        <span className="text-[13px] font-bold text-gray-800">Cliente Simulação</span>
-                        <span className={`text-[9px] text-white ${colors.blueTag} px-1.5 rounded-[2px] font-bold`}>EM ATENDI</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] text-gray-500 truncate">
-                        {customerMsgs.length > 0 ? <span>{customerMsgs[customerMsgs.length-1].text}</span> : <span>Foto</span>}
-                    </div>
-                    <div className="text-[10px] text-gray-400 text-right mt-1">há 3 dias</div>
-                  </div>
-                  {activeChat === 'customer' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>}
-                </div>
-
-                {/* Item 2: Support */}
-                <div 
-                  onClick={() => setActiveChat('support')}
-                  className={`flex gap-3 p-3 border-b border-gray-100 cursor-pointer transition-colors relative
-                    ${activeChat === 'support' ? 'bg-[#e9eff5]' : 'hover:bg-gray-50'}
-                  `}
-                >
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-xs font-bold">cg</div>
-                    {supportUnread > 0 && activeChat !== 'support' && (
-                      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white">
-                        {supportUnread}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-0.5">
-                        <span className="text-[13px] font-bold text-gray-800">Suporte</span>
-                        <span className={`text-[9px] text-white ${colors.redTag} px-1.5 rounded-[2px] font-bold`}>ABERTO</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] text-gray-500 truncate">
-                        <span>{supportMsgs.length > 0 ? supportMsgs[supportMsgs.length-1].text : 'Bem-vindo!'}</span>
-                    </div>
-                    <div className="text-[10px] text-gray-400 text-right mt-1">agora</div>
-                  </div>
-                  {activeChat === 'support' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>}
-                </div>
-
+            
+            <div className="flex items-center gap-4 text-gray-500">
+              <span className="cursor-pointer text-[#25D366]"><Icons.Whatsapp /></span> 
+              <div className="relative cursor-pointer hover:text-gray-700">
+                <Icons.Bell />
+                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full">2</span>
+              </div>
+              <span className="cursor-pointer hover:text-gray-700"><Icons.Send /></span>
+              <span className="cursor-pointer hover:text-gray-700 text-lg">◑</span>
+              <span className="cursor-pointer hover:text-red-500 text-lg">✕</span>
             </div>
           </div>
 
-          {/* CHAT AREA */}
-          <div className="flex-1 flex flex-col bg-[#efeae2] relative min-w-0">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')" }}></div>
-
-            {/* Chat Header */}
-            <div className={`h-[50px] bg-white border-b ${colors.panelBorder} flex items-center justify-between px-3 z-10 shadow-sm`}>
-              <div className="flex items-center gap-3">
-                {isCustomer ? 
-                  <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" className="w-9 h-9 rounded-full object-cover" alt="" /> :
-                  <div className="w-9 h-9 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-xs font-bold">cg</div>
-                }
-                <div className="font-semibold text-[14px] text-gray-800">
-                  {isCustomer ? "Cliente Simulação" : "Suporte ChatGuru"}
+          <div className="flex flex-1 overflow-hidden">
+            {/* CONTACT LIST PANEL */}
+            <div className={`w-[320px] ${colors.panelBg} border-r ${colors.panelBorder} flex flex-col flex-shrink-0`}>
+              {/* Search */}
+              <div className="p-3 border-b border-gray-100">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Icons.Search /></span>
+                  <input 
+                    className="w-full bg-[#f0f2f5] text-gray-700 text-[12px] py-2 pl-9 pr-8 rounded border border-transparent focus:bg-white focus:border-[#2DD4A0] outline-none transition-all placeholder-gray-400"
+                    placeholder="Pesquisar mensagem" 
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer text-[#2DD4A0]">
+                    <Icons.User />
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                  <div className={`flex items-center ${isCustomer ? colors.blueTag : colors.redTag} text-white text-[11px] font-bold px-3 py-1.5 rounded-[4px] cursor-pointer`}>
-                    {isCustomer ? "EM ATENDIMENTO" : "ABERTO"} <span className="ml-2 text-[8px]">▼</span>
+              {/* Filters (Mocked to match screenshot) */}
+              <div className="p-3 bg-white border-b border-gray-200 text-[11px] flex flex-col gap-2 overflow-y-auto max-h-[220px]">
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center relative">
+                    <span className="font-medium">Nome:</span> <div className="w-4 h-4 bg-red-400 rounded text-white flex items-center justify-center text-[8px] font-bold cursor-pointer">•••</div>
                   </div>
-                  <span className="text-gray-500 cursor-pointer transform rotate-45"><Icons.Paperclip /></span>
-                  <span className="text-gray-500 cursor-pointer text-lg">💬</span>
-                  <span className="text-gray-500 cursor-pointer">•••</span>
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                    <span className="font-medium">Aparelho:</span> <span className="text-[10px]">▼</span>
+                  </div>
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                    <span className="font-medium">Número Whatsapp:</span>
+                  </div>
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                    <span className="font-medium">Tags:</span> <span className="text-gray-400">Qualquer ▼</span>
+                  </div>
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                    <span className="font-medium">Usuário/Departamento:</span> <span className="text-gray-400">Qualquer ▼</span>
+                  </div>
+                  <div className="border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                    <span className="font-medium">Etapa do Funil:</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1 border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                      <span className="font-medium">Status:</span> <span className="text-[10px]">▼</span>
+                    </div>
+                    <div className="flex-1 border border-gray-200 rounded px-2 py-1.5 bg-gray-50 text-gray-500 flex justify-between items-center">
+                      <span className="font-medium">Ordenar Por</span> <span className="text-[10px]">▼</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-1 pt-1">
+                    <div className="flex gap-2">
+                        <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-red-400 cursor-pointer hover:bg-gray-50">✉️</div>
+                        <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-blue-400 cursor-pointer hover:bg-gray-50">💳</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex items-center gap-1 border border-gray-300 rounded px-1.5 h-7">
+                          <span className="text-lg leading-none">((•))</span> <input type="checkbox" className="w-3 h-3" />
+                      </div>
+                      <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-yellow-400 cursor-pointer hover:bg-gray-50">⭐</div>
+                      <div className="w-7 h-7 border border-gray-300 rounded flex items-center justify-center text-blue-400 cursor-pointer hover:bg-gray-50">🕒</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-start text-[10px] text-gray-500 mt-1 cursor-pointer hover:text-gray-700">
+                    Esconder Filtros <span className="rotate-180 ml-1">^</span>
+                  </div>
+              </div>
+              
+              <div className="px-3 py-1.5 text-[10px] text-gray-500 font-medium italic border-b border-gray-100 bg-gray-50">
+                  Exibindo 2 resultados:
+              </div>
+
+              {/* List */}
+              <div className="flex-1 overflow-y-auto bg-white">
+                  
+                  {/* Item 1: Customer (Active) */}
+                  <div 
+                    onClick={() => setActiveChat('customer')}
+                    className={`flex gap-3 p-3 border-b border-gray-100 cursor-pointer transition-colors relative
+                      ${activeChat === 'customer' ? 'bg-[#e9eff5]' : 'hover:bg-gray-50'}
+                    `}
+                  >
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                          <span className="text-[13px] font-bold text-gray-800">Cliente Simulação</span>
+                          <span className={`text-[9px] text-white ${colors.blueTag} px-1.5 rounded-[2px] font-bold`}>EM ATENDI</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-gray-500 truncate">
+                          {customerMsgs.length > 0 ? <span>{customerMsgs[customerMsgs.length-1].text}</span> : <span>Foto</span>}
+                      </div>
+                      <div className="text-[10px] text-gray-400 text-right mt-1">há 3 dias</div>
+                    </div>
+                    {activeChat === 'customer' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>}
+                  </div>
+
+                  {/* Item 2: Support */}
+                  <div 
+                    onClick={() => setActiveChat('support')}
+                    className={`flex gap-3 p-3 border-b border-gray-100 cursor-pointer transition-colors relative
+                      ${activeChat === 'support' ? 'bg-[#e9eff5]' : 'hover:bg-gray-50'}
+                    `}
+                  >
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-xs font-bold">cg</div>
+                      {supportUnread > 0 && activeChat !== 'support' && (
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white">
+                          {supportUnread}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                          <span className="text-[13px] font-bold text-gray-800">Suporte</span>
+                          <span className={`text-[9px] text-white ${colors.redTag} px-1.5 rounded-[2px] font-bold`}>ABERTO</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-gray-500 truncate">
+                          <span>{supportMsgs.length > 0 ? supportMsgs[supportMsgs.length-1].text : 'Bem-vindo!'}</span>
+                      </div>
+                      <div className="text-[10px] text-gray-400 text-right mt-1">agora</div>
+                    </div>
+                    {activeChat === 'support' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>}
+                  </div>
+
               </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2 z-10 custom-scrollbar">
-              {isCustomer && (
-                <>
-                  {customerMsgs.map((m, i) => (
-                    <div key={i} className="self-start max-w-[75%] bg-white rounded-lg rounded-tl-none shadow-sm p-1.5 px-3 animate-slide-up">
-                        <div className="text-[13px] text-[#111b21] leading-snug whitespace-pre-wrap">
-                          {m.text.split("**").map((part, idx) => 
-                            idx % 2 === 1 ? <strong key={idx} className="font-bold text-brand-greenDark">{part}</strong> : part
-                          )}
-                        </div>
-                        <div className="text-[10px] text-gray-400 text-right mt-1">{m.time}</div>
-                    </div>
-                  ))}
+            {/* CHAT AREA */}
+            <div className="flex-1 flex flex-col bg-[#efeae2] relative min-w-0">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')" }}></div>
 
-                  {myCustomerMsgs.map((m, i) => (
-                    <div key={i} className="self-end max-w-[65%] bg-[#d9fdd3] rounded-lg rounded-tr-none shadow-sm p-1.5 px-2 animate-slide-up">
-                       <div className="text-[13px] text-[#111b21]">{m.text}</div>
-                       <div className="text-[10px] text-gray-400 text-right flex items-center justify-end gap-1 mt-1">
-                          {m.time} <span className="text-[#53bdeb]"><Icons.Check /></span>
-                       </div>
-                    </div>
-                  ))}
-                </>
-              )}
+              {/* Chat Header */}
+              <div className={`h-[50px] bg-white border-b ${colors.panelBorder} flex items-center justify-between px-3 z-10 shadow-sm`}>
+                <div className="flex items-center gap-3">
+                  {isCustomer ? 
+                    <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" className="w-9 h-9 rounded-full object-cover" alt="" /> :
+                    <div className="w-9 h-9 rounded-full bg-[#1B3D2F] flex items-center justify-center text-white text-xs font-bold">cg</div>
+                  }
+                  <div className="font-semibold text-[14px] text-gray-800">
+                    {isCustomer ? "Cliente Simulação" : "Suporte ChatGuru"}
+                  </div>
+                </div>
 
-              {!isCustomer && (
-                <>
-                  {supportMsgs.map((m, i) => (
-                      <div key={i} className="self-start max-w-[70%] bg-white rounded-lg rounded-tl-none shadow-sm p-2 border-l-4 border-l-blue-400 animate-slide-up">
-                          <span className="text-[10px] font-bold text-blue-500 block mb-1">Suporte ChatGuru</span>
-                          <div className="text-[13px] text-[#111b21]">{m.text}</div>
+                <div className="flex items-center gap-3">
+                    <div className={`flex items-center ${isCustomer ? colors.blueTag : colors.redTag} text-white text-[11px] font-bold px-3 py-1.5 rounded-[4px] cursor-pointer`}>
+                      {isCustomer ? "EM ATENDIMENTO" : "ABERTO"} <span className="ml-2 text-[8px]">▼</span>
+                    </div>
+                    <span className="text-gray-500 cursor-pointer transform rotate-45"><Icons.Paperclip /></span>
+                    <span className="text-gray-500 cursor-pointer text-lg">💬</span>
+                    <span className="text-gray-500 cursor-pointer">•••</span>
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2 z-10 custom-scrollbar">
+                {isCustomer && (
+                  <>
+                    {customerMsgs.map((m, i) => (
+                      <div key={i} className="self-start max-w-[75%] bg-white rounded-lg rounded-tl-none shadow-sm p-1.5 px-3 animate-slide-up">
+                          <div className="text-[13px] text-[#111b21] leading-snug whitespace-pre-wrap">
+                            {m.text.split("**").map((part, idx) => 
+                              idx % 2 === 1 ? <strong key={idx} className="font-bold text-brand-greenDark">{part}</strong> : part
+                            )}
+                          </div>
                           <div className="text-[10px] text-gray-400 text-right mt-1">{m.time}</div>
                       </div>
-                  ))}
-                  {mySupportMsgs.map((m, i) => (
-                    <div key={i} className="self-end max-w-[65%] bg-[#d9fdd3] rounded-lg rounded-tr-none shadow-sm p-1.5 px-2 animate-slide-up">
-                       <div className="text-[13px] text-[#111b21]">{m.text}</div>
-                       <div className="text-[10px] text-gray-400 text-right flex items-center justify-end gap-1 mt-1">
-                          {m.time} <span className="text-[#53bdeb]"><Icons.Check /></span>
-                       </div>
-                    </div>
-                  ))}
-                </>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+                    ))}
 
-            {/* Input Bar */}
-            <div className={`p-2 bg-[#f0f2f5] border-t ${colors.panelBorder} flex items-center gap-3 z-10`}>
-                <div className="flex gap-3 text-gray-500 px-2">
-                  <span className="cursor-pointer hover:text-gray-700 text-lg">📅</span>
-                  <span className="cursor-pointer hover:text-gray-700 text-lg"><Icons.Smile /></span>
-                </div>
-                <div className="flex-1 bg-white rounded-[8px] border border-white flex items-center px-3 py-1.5 shadow-sm focus-within:border-[#2DD4A0]">
-                  <input 
-                    value={inputVal}
-                    onChange={(e) => setInputVal(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                    className="flex-1 text-[14px] outline-none text-gray-700 placeholder-gray-400 h-[24px]"
-                    placeholder="Digite uma mensagem"
-                  />
-                </div>
-                <div className="flex gap-3 text-gray-500 px-1 items-center">
-                   <span className="cursor-pointer hover:text-gray-700 text-lg text-[#2DD4A0]"><Icons.Filter /></span>
-                   <button onClick={sendMessage} className="text-[#2DD4A0] hover:text-[#25b588]">
-                      {inputVal ? <Icons.Send /> : <Icons.Mic />}
-                   </button>
-                </div>
-            </div>
-          </div>
-
-          {/* RIGHT SIDEBAR (Contact Info) */}
-          {isCustomer && (
-            <div className={`w-[300px] ${colors.panelBg} border-l ${colors.panelBorder} flex flex-col overflow-y-auto hidden md:flex flex-shrink-0 z-10`}>
-              {/* Top Icons */}
-              <div className="flex items-center justify-between p-2 border-b border-gray-100 text-gray-500 text-lg">
-                 <div className="flex gap-4 px-2">
-                    <span className="text-blue-500 border-b-2 border-blue-500 pb-2 -mb-2.5 cursor-pointer">👤</span>
-                    <span className="cursor-pointer hover:text-blue-500">🕒</span>
-                    <span className="cursor-pointer hover:text-blue-500">📅</span>
-                    <span className="cursor-pointer hover:text-blue-500">▼</span>
-                    <span className="cursor-pointer hover:text-blue-500">👥</span>
-                    <span className="cursor-pointer hover:text-blue-500">🤖</span>
-                    <span className="cursor-pointer hover:text-blue-500">⇆</span>
-                    <span className="cursor-pointer hover:text-blue-500">▶</span>
-                 </div>
-                 <span className="text-red-400 cursor-pointer text-sm">✕</span>
-              </div>
-
-              {/* Profile Card */}
-              <div className="p-4 border-b border-gray-100">
-                 <div className="flex gap-3 mb-3">
-                    <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" className="w-[70px] h-[70px] rounded object-cover" alt="" />
-                    <div className="flex-1">
-                       <div className="text-[10px] text-gray-400 uppercase font-bold">NOME:</div>
-                       <div className="flex items-center gap-1 font-bold text-[#5b9bd5] text-[14px]">
-                          <span className="text-xs text-gray-400">★</span> Cliente Simulação
-                       </div>
-                       <div className="text-[12px] text-gray-600">+55 (11) 99999-9999</div>
-                    </div>
-                    <div className="text-blue-400 text-xs cursor-pointer">🔗</div>
-                 </div>
-                 
-                 <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-2 text-[11px] items-center">
-                    <span className="text-gray-500 text-right">🤖 Chatbot:</span>
-                    <div className="flex justify-end"><span className="bg-[#2DD4A0] text-white px-2 rounded-[2px] font-bold">Sim</span></div>
-                    
-                    <span className="text-gray-500 text-right">📦 Arquivar:</span>
-                    <div className="flex justify-end"><span className="bg-gray-400 text-white px-2 rounded-[2px] font-bold">Não</span></div>
-                 </div>
-              </div>
-
-              {/* Responsible */}
-              <div className="p-3 border-b border-gray-100">
-                 <div className="text-[12px] font-bold text-[#5b9bd5] mb-1">Responsável:</div>
-                 <div className="flex gap-2">
-                    <div className="flex-1 border border-gray-300 bg-white rounded px-2 py-1 text-[11px] text-gray-500 flex justify-between items-center cursor-pointer">
-                       - Ninguém Delegado - <span className="text-[8px]">▼</span>
-                    </div>
-                    <button className="border border-gray-300 bg-white rounded px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50">Delegar p/ Fila</button>
-                 </div>
-              </div>
-
-              {/* Tags */}
-              <div className="p-3 border-b border-gray-100">
-                 <div className="text-[12px] font-bold text-[#5b9bd5] mb-2">Tags:</div>
-                 <button className="flex items-center gap-1 text-[11px] text-blue-500 border border-blue-200 rounded px-2 py-0.5 hover:bg-blue-50 w-fit mb-2">
-                   <span className="font-bold text-lg leading-none">+</span> Nova Tag
-                 </button>
-                 <div className="flex flex-wrap gap-1 mt-2">
-                   {cfg?.tags.slice(0, 3).map((t, i) => (
-                      <span key={i} className="text-[10px] bg-gray-100 border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded">{t}</span>
-                   ))}
-                 </div>
-              </div>
-
-              {/* Custom Fields */}
-              <div className="p-3 border-b border-gray-100 bg-[#fbfcfd]">
-                 <div className="text-[12px] font-bold text-[#5b9bd5] mb-2">Campos Personalizados:</div>
-                 <div className="flex flex-col gap-2">
-                   {[
-                     { l: "E-mail:", p: "" },
-                     { l: "Data reunião:", p: "dd/mm/aaaa", i: "📅" },
-                     { l: "Horário reunião:", p: "--:--", i: "🕒" },
-                     { l: "Empresa:", p: companyName },
-                     { l: "Site:", p: "" },
-                     { l: "CRM:", p: "" },
-                     { l: "Contato:", p: "" }
-                   ].map((f, i) => (
-                     <div key={i} className="flex items-center gap-2">
-                        <div className="w-[90px] text-[11px] text-gray-600 font-medium truncate">{f.l}</div>
-                        <div className="flex-1 relative">
-                          <input className="w-full border border-gray-300 rounded px-2 py-1 text-[11px] bg-white outline-none focus:border-[#5b9bd5]" defaultValue={f.p} />
-                          {f.i && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] opacity-50">{f.i}</span>}
+                    {myCustomerMsgs.map((m, i) => (
+                      <div key={i} className="self-end max-w-[65%] bg-[#d9fdd3] rounded-lg rounded-tr-none shadow-sm p-1.5 px-2 animate-slide-up">
+                        <div className="text-[13px] text-[#111b21]">{m.text}</div>
+                        <div className="text-[10px] text-gray-400 text-right flex items-center justify-end gap-1 mt-1">
+                            {m.time} <span className="text-[#53bdeb]"><Icons.Check /></span>
                         </div>
-                     </div>
-                   ))}
-                 </div>
-                 <button className="mt-3 w-fit border border-gray-300 rounded bg-white px-2 py-1 text-[10px] text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-50">
-                    <span className="text-sm">👤</span> Gerenciar Campos Personalizados
-                 </button>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {!isCustomer && (
+                  <>
+                    {supportMsgs.map((m, i) => (
+                        <div key={i} className="self-start max-w-[70%] bg-white rounded-lg rounded-tl-none shadow-sm p-2 border-l-4 border-l-blue-400 animate-slide-up">
+                            <span className="text-[10px] font-bold text-blue-500 block mb-1">Suporte ChatGuru</span>
+                            <div className="text-[13px] text-[#111b21]">{m.text}</div>
+                            <div className="text-[10px] text-gray-400 text-right mt-1">{m.time}</div>
+                        </div>
+                    ))}
+                    {mySupportMsgs.map((m, i) => (
+                      <div key={i} className="self-end max-w-[65%] bg-[#d9fdd3] rounded-lg rounded-tr-none shadow-sm p-1.5 px-2 animate-slide-up">
+                        <div className="text-[13px] text-[#111b21]">{m.text}</div>
+                        <div className="text-[10px] text-gray-400 text-right flex items-center justify-end gap-1 mt-1">
+                            {m.time} <span className="text-[#53bdeb]"><Icons.Check /></span>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
+                <div ref={chatEndRef} />
               </div>
 
-              {/* Other Info */}
-              <div className="p-3">
-                 <div className="text-[12px] font-bold text-[#5b9bd5] mb-1.5">Outras Informações:</div>
-                 <div className="text-[10px] text-gray-500 leading-relaxed">
-                   <div className="flex gap-1"><span>📞</span> Aparelho Origem: 556196316015</div>
-                   <div className="flex gap-1"><span>📅</span> Data de Cadastro: 04/08/25 16:48</div>
-                 </div>
+              {/* Input Bar */}
+              <div className={`p-2 bg-[#f0f2f5] border-t ${colors.panelBorder} flex items-center gap-3 z-10`}>
+                  <div className="flex gap-3 text-gray-500 px-2">
+                    <span className="cursor-pointer hover:text-gray-700 text-lg">📅</span>
+                    <span className="cursor-pointer hover:text-gray-700 text-lg"><Icons.Smile /></span>
+                  </div>
+                  <div className="flex-1 bg-white rounded-[8px] border border-white flex items-center px-3 py-1.5 shadow-sm focus-within:border-[#2DD4A0]">
+                    <input 
+                      value={inputVal}
+                      onChange={(e) => setInputVal(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                      className="flex-1 text-[14px] outline-none text-gray-700 placeholder-gray-400 h-[24px]"
+                      placeholder="Digite uma mensagem"
+                    />
+                  </div>
+                  <div className="flex gap-3 text-gray-500 px-1 items-center">
+                    <span className="cursor-pointer hover:text-gray-700 text-lg text-[#2DD4A0]"><Icons.Filter /></span>
+                    <button onClick={sendMessage} className="text-[#2DD4A0] hover:text-[#25b588]">
+                        {inputVal ? <Icons.Send /> : <Icons.Mic />}
+                    </button>
+                  </div>
               </div>
             </div>
-          )}
+
+            {/* RIGHT SIDEBAR (Contact Info) */}
+            {isCustomer && (
+              <div className={`w-[300px] ${colors.panelBg} border-l ${colors.panelBorder} flex flex-col overflow-y-auto hidden md:flex flex-shrink-0 z-10`}>
+                {/* Top Icons */}
+                <div className="flex items-center justify-between p-2 border-b border-gray-100 text-gray-500 text-lg">
+                  <div className="flex gap-4 px-2">
+                      <span className="text-blue-500 border-b-2 border-blue-500 pb-2 -mb-2.5 cursor-pointer">👤</span>
+                      <span className="cursor-pointer hover:text-blue-500">🕒</span>
+                      <span className="cursor-pointer hover:text-blue-500">📅</span>
+                      <span className="cursor-pointer hover:text-blue-500">▼</span>
+                      <span className="cursor-pointer hover:text-blue-500">👥</span>
+                      <span className="cursor-pointer hover:text-blue-500">🤖</span>
+                      <span className="cursor-pointer hover:text-blue-500">⇆</span>
+                      <span className="cursor-pointer hover:text-blue-500">▶</span>
+                  </div>
+                  <span className="text-red-400 cursor-pointer text-sm">✕</span>
+                </div>
+
+                {/* Profile Card */}
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex gap-3 mb-3">
+                      <img src="https://ui-avatars.com/api/?name=F&background=F3DFC0&color=8B4D2E&size=128" className="w-[70px] h-[70px] rounded object-cover" alt="" />
+                      <div className="flex-1">
+                        <div className="text-[10px] text-gray-400 uppercase font-bold">NOME:</div>
+                        <div className="flex items-center gap-1 font-bold text-[#5b9bd5] text-[14px]">
+                            <span className="text-xs text-gray-400">★</span> Cliente Simulação
+                        </div>
+                        <div className="text-[12px] text-gray-600">+55 (11) 99999-9999</div>
+                      </div>
+                      <div className="text-blue-400 text-xs cursor-pointer">🔗</div>
+                  </div>
+                  
+                  <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-2 text-[11px] items-center">
+                      <span className="text-gray-500 text-right">🤖 Chatbot:</span>
+                      <div className="flex justify-end"><span className="bg-[#2DD4A0] text-white px-2 rounded-[2px] font-bold">Sim</span></div>
+                      
+                      <span className="text-gray-500 text-right">📦 Arquivar:</span>
+                      <div className="flex justify-end"><span className="bg-gray-400 text-white px-2 rounded-[2px] font-bold">Não</span></div>
+                  </div>
+                </div>
+
+                {/* Responsible */}
+                <div className="p-3 border-b border-gray-100">
+                  <div className="text-[12px] font-bold text-[#5b9bd5] mb-1">Responsável:</div>
+                  <div className="flex gap-2">
+                      <div className="flex-1 border border-gray-300 bg-white rounded px-2 py-1 text-[11px] text-gray-500 flex justify-between items-center cursor-pointer">
+                        - Ninguém Delegado - <span className="text-[8px]">▼</span>
+                      </div>
+                      <button className="border border-gray-300 bg-white rounded px-2 py-1 text-[11px] text-gray-500 hover:bg-gray-50">Delegar p/ Fila</button>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                <div className="p-3 border-b border-gray-100">
+                  <div className="text-[12px] font-bold text-[#5b9bd5] mb-2">Tags:</div>
+                  <button className="flex items-center gap-1 text-[11px] text-blue-500 border border-blue-200 rounded px-2 py-0.5 hover:bg-blue-50 w-fit mb-2">
+                    <span className="font-bold text-lg leading-none">+</span> Nova Tag
+                  </button>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {cfg?.tags.slice(0, 3).map((t, i) => (
+                        <span key={i} className="text-[10px] bg-gray-100 border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded">{t}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Custom Fields */}
+                <div className="p-3 border-b border-gray-100 bg-[#fbfcfd]">
+                  <div className="text-[12px] font-bold text-[#5b9bd5] mb-2">Campos Personalizados:</div>
+                  <div className="flex flex-col gap-2">
+                    {[
+                      { l: "E-mail:", p: "" },
+                      { l: "Data reunião:", p: "dd/mm/aaaa", i: "📅" },
+                      { l: "Horário reunião:", p: "--:--", i: "🕒" },
+                      { l: "Empresa:", p: companyName },
+                      { l: "Site:", p: "" },
+                      { l: "CRM:", p: "" },
+                      { l: "Contato:", p: "" }
+                    ].map((f, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                          <div className="w-[90px] text-[11px] text-gray-600 font-medium truncate">{f.l}</div>
+                          <div className="flex-1 relative">
+                            <input className="w-full border border-gray-300 rounded px-2 py-1 text-[11px] bg-white outline-none focus:border-[#5b9bd5]" defaultValue={f.p} />
+                            {f.i && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] opacity-50">{f.i}</span>}
+                          </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="mt-3 w-fit border border-gray-300 rounded bg-white px-2 py-1 text-[10px] text-gray-500 flex items-center justify-center gap-1 hover:bg-gray-50">
+                      <span className="text-sm">👤</span> Gerenciar Campos Personalizados
+                  </button>
+                </div>
+
+                {/* Other Info */}
+                <div className="p-3">
+                  <div className="text-[12px] font-bold text-[#5b9bd5] mb-1.5">Outras Informações:</div>
+                  <div className="text-[10px] text-gray-500 leading-relaxed">
+                    <div className="flex gap-1"><span>📞</span> Aparelho Origem: 556196316015</div>
+                    <div className="flex gap-1"><span>📅</span> Data de Cadastro: 04/08/25 16:48</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 export type StepId = 
   | "welcome" 
   | "auth" 
@@ -59,4 +60,5 @@ export interface OnboardingContextType {
   updateData: (data: Partial<OnboardingData>) => void;
   nextStep: () => void;
   prevStep: () => void;
+  resetOnboarding: () => void;
 }

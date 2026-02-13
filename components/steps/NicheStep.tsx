@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -11,7 +12,15 @@ export const NicheStep: React.FC = () => {
   return (
     <div className="py-4 animate-fade-in">
       <h2 className="text-2xl font-bold text-brand-greenDark mb-1.5 font-sans text-center">Qual é o seu nicho?</h2>
-      <p className="text-sm text-brand-textMuted mb-7 text-center">Vamos deixar tudo pronto para você — automações, filas e mensagens</p>
+      <p className="text-sm text-brand-textMuted mb-2 text-center">Isso nos ajuda a configurar sua conta automaticamente.</p>
+      
+      {/* Disclaimer Box */}
+      <div className="max-w-[500px] mx-auto mb-6 p-3 rounded-lg bg-brand-offWhite border border-[#E2EDE7] flex items-start gap-2.5">
+        <span className="text-lg">💡</span>
+        <p className="text-xs text-brand-textMuted leading-relaxed text-left">
+          <strong>Fique tranquilo!</strong> Essas configurações (filas e etiquetas) são apenas sugestões iniciais para você não começar do zero. Após finalizar o cadastro, você terá total liberdade para personalizar, excluir ou criar novas regras do seu jeito.
+        </p>
+      </div>
       
       <div className="grid grid-cols-[repeat(auto-fill,minmax(145px,1fr))] gap-2.5 max-w-[640px] mx-auto mb-5">
         {NICHES.map((n) => {

@@ -12,7 +12,9 @@ export const authSchema = z.object({
 });
 
 export const verifySchema = z.object({
-  companyName: z.string().min(3, "O nome da empresa deve ter mais de 3 caracteres"),
+  companyName: z.string()
+    .min(3, "O nome da empresa deve ter mais de 3 caracteres")
+    .max(300, "O nome da empresa deve ter no máximo 300 caracteres"),
   phone: z.string().regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Formato inválido. Use (99) 99999-9999"),
   agreed: z.literal(true, {
     errorMap: () => ({ message: "Você deve aceitar os termos para continuar" }),

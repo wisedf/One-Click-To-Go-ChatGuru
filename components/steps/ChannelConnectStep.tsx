@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -62,6 +63,11 @@ export const ChannelConnectStep: React.FC = () => {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState<{text: string, from: 'system'|'bot'}[]>([]);
   const [offerPulse, setOfferPulse] = useState(true);
+
+  // Tutorial State
+  const [tutorialDevice, setTutorialDevice] = useState<'android'|'iphone'>('android');
+  // Alterado para true para aparecer aberto por padrão
+  const [showTutorial, setShowTutorial] = useState(true);
 
   // Constants matching prototype
   const channels = [
@@ -139,7 +145,7 @@ export const ChannelConnectStep: React.FC = () => {
     if ((!needsQR && wabaPhase !== "qr") || connected) return;
 
     if (needsQR || wabaPhase === "qr") {
-      const t = setTimeout(() => setConnected(true), 3500);
+      const t = setTimeout(() => setConnected(true), 15000); // 15 seconds to simulate user fumbling with phone
       return () => clearTimeout(t);
     }
   }, [currentStep, data.channel, wabaPhase, connected]);
@@ -586,14 +592,92 @@ export const ChannelConnectStep: React.FC = () => {
 
       <div className="max-w-[440px] mx-auto">
         {!connected ? (
-          <div className="p-8 rounded-2xl bg-white border-[1.5px] border-[#E2EDE7] shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-center">
-            <div className="inline-block p-4 bg-brand-greenLight rounded-2xl mb-4 border-2 border-brand-green">
-              <QRCode />
+          <>
+            <div className="p-8 rounded-2xl bg-white border-[1.5px] border-[#E2EDE7] shadow-[0_1px_4px_rgba(0,0,0,0.03)] text-center relative z-10">
+              <div className="inline-block p-4 bg-brand-greenLight rounded-2xl mb-4 border-2 border-brand-green">
+                <QRCode />
+              </div>
+              <div className="text-[13px] text-brand-textMuted flex items-center justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-brand-pastelOrange animate-pulse-slow" /> Aguardando leitura...
+              </div>
             </div>
-            <div className="text-[13px] text-brand-textMuted flex items-center justify-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-brand-pastelOrange animate-pulse-slow" /> Aguardando leitura...
+
+            {/* How to scan Accordion/Section */}
+            <div className="mt-4 bg-brand-offWhite rounded-xl border border-[#E2EDE7] overflow-hidden">
+               <button 
+                 onClick={() => setShowTutorial(!showTutorial)}
+                 className="w-full p-3 flex items-center justify-center gap-2 text-xs font-semibold text-brand-textMuted hover:bg-gray-100 transition-colors"
+               >
+                 <span>❓</span> Não sabe como escanear? 
+                 <span className={`transform transition-transform ${showTutorial ? 'rotate-180' : ''}`}>▼</span>
+               </button>
+
+               {showTutorial && (
+                 <div className="p-4 pt-0 border-t border-[#E2EDE7] animate-slide-up bg-white">
+                    <div className="flex justify-center gap-4 py-3">
+                      <button 
+                        onClick={() => setTutorialDevice('android')}
+                        className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-colors
+                          ${tutorialDevice === 'android' ? 'bg-brand-green text-white border-brand-green' : 'bg-white text-gray-400 border-gray-200'}
+                        `}
+                      >
+                        Android
+                      </button>
+                      <button 
+                        onClick={() => setTutorialDevice('iphone')}
+                        className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-colors
+                          ${tutorialDevice === 'iphone' ? 'bg-brand-green text-white border-brand-green' : 'bg-white text-gray-400 border-gray-200'}
+                        `}
+                      >
+                        iPhone
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-left">
+                       {/* Simulated Phone Screen Animation */}
+                       <div className="w-[80px] h-[140px] border-4 border-gray-800 rounded-[14px] bg-gray-100 relative overflow-hidden flex-shrink-0 mx-auto">
+                          {/* Screen content */}
+                          <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-gray-400 rounded-full"></div> 
+                          {/* Menu Animation */}
+                          <div className="absolute top-8 right-2 w-16 h-20 bg-white shadow-md rounded p-1 flex flex-col gap-1 z-10 animate-pulse">
+                              <div className="h-1 bg-gray-200 w-full rounded"></div>
+                              <div className="h-1 bg-brand-green w-full rounded"></div>
+                              <div className="h-1 bg-gray-200 w-full rounded"></div>
+                          </div>
+                          {/* Scan Line */}
+                          <div className="absolute top-0 left-0 w-full h-1 bg-brand-green/50 shadow-[0_0_10px_#2DD4A0] animate-[slideDown_2s_linear_infinite]"></div>
+                       </div>
+
+                       <div className="flex-1 text-xs text-brand-textMuted leading-relaxed">
+                          {tutorialDevice === 'android' ? (
+                            <ol className="list-decimal pl-4 space-y-1.5">
+                              <li>Abra o WhatsApp.</li>
+                              <li>Toque nos <strong>3 pontinhos (⋮)</strong> no canto superior.</li>
+                              <li>Selecione <strong>Aparelhos conectados</strong>.</li>
+                              <li>Toque em <strong>Conectar um aparelho</strong> e aponte a câmera.</li>
+                            </ol>
+                          ) : (
+                            <ol className="list-decimal pl-4 space-y-1.5">
+                              <li>Abra o WhatsApp.</li>
+                              <li>Vá em <strong>Configurações</strong> (⚙️) no canto inferior.</li>
+                              <li>Toque em <strong>Aparelhos conectados</strong>.</li>
+                              <li>Toque em <strong>Conectar um aparelho</strong> e aponte a câmera.</li>
+                            </ol>
+                          )}
+                       </div>
+                    </div>
+                    <style>{`
+                      @keyframes slideDown {
+                        0% { top: 0%; opacity: 0; }
+                        10% { opacity: 1; }
+                        90% { opacity: 1; }
+                        100% { top: 100%; opacity: 0; }
+                      }
+                    `}</style>
+                 </div>
+               )}
             </div>
-          </div>
+          </>
         ) : (
           <div className="flex flex-col gap-2">
             {messages.map((m, i) => (

@@ -76,10 +76,17 @@ export const OnboardingProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
+  const resetOnboarding = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setData(defaultData);
+    setStepState("welcome");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   if (!isRestored) return null; // Evita flash de conteúdo antes de restaurar
 
   return (
-    <OnboardingContext.Provider value={{ currentStep, data, setStep, updateData, nextStep, prevStep }}>
+    <OnboardingContext.Provider value={{ currentStep, data, setStep, updateData, nextStep, prevStep, resetOnboarding }}>
       {children}
     </OnboardingContext.Provider>
   );
