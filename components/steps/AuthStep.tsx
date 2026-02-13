@@ -1,31 +1,76 @@
+
 import React, { useState } from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { ChatBubble } from '../ui/ChatBubble';
+import { authSchema } from '../../validators/schemas';
+import { onboardingService } from '../../services/onboardingService';
 
 export const AuthStep: React.FC = () => {
   const { nextStep, data, updateData } = useOnboarding();
   const [mode, setMode] = useState<'google' | 'email' | null>(null);
   const [emailStep, setEmailStep] = useState<'form' | 'verify'>('form');
-  const [password, setPassword] = useState("");
-  const [confirmPwd, setConfirmPwd] = useState("");
+  
+  // Local form state
+  const [formData, setFormData] = useState({
+    name: data.name || "",
+    email: data.email || "",
+    password: "",
+    confirmPwd: ""
+  });
+  
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verifyCode, setVerifyCode] = useState("");
   const [captchaChecked, setCaptchaChecked] = useState(false);
   const [captchaLoading, setCaptchaLoading] = useState(false);
-  const [verifyCode, setVerifyCode] = useState("");
-  
-  const pwdMatch = password.length >= 8 && password === confirmPwd;
-  const formValid = data.name && data.email && pwdMatch && captchaChecked;
 
   const handleCaptcha = () => {
     setCaptchaLoading(true);
     setTimeout(() => { setCaptchaLoading(false); setCaptchaChecked(true); }, 1200);
   };
 
-  const handleSubmitForm = () => {
-    if (!formValid) return;
-    updateData({ authMethod: "email" });
-    setEmailStep("verify");
+  const validateForm = () => {
+    const result = authSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
+      });
+      setErrors(fieldErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  const handleSubmitForm = async () => {
+    if (!validateForm() || !captchaChecked) return;
+    
+    setIsSubmitting(true);
+    try {
+      // Integração via Service (RF-03)
+      const check = await onboardingService.checkEmailExists(formData.email);
+      if (check.ok && check.data?.exists) {
+        setErrors({ email: "Este e-mail já está cadastrado. Faça login." });
+        return;
+      }
+
+      await onboardingService.sendVerificationCode(formData.email);
+      
+      updateData({ 
+        name: formData.name, 
+        email: formData.email, 
+        authMethod: "email" 
+      });
+      setEmailStep("verify");
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao conectar. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleAuth = () => {
@@ -33,11 +78,33 @@ export const AuthStep: React.FC = () => {
     updateData({ authMethod: "google", name: "Fabrício Silva", email: "fabricio@empresa.com.br" });
   };
 
-  const handleVerifyCode = (val: string) => {
+  const handleVerifyCode = async (val: string) => {
     const cleanVal = val.replace(/[^a-zA-Z0-9]/g, "").substring(0, 5);
     setVerifyCode(cleanVal);
+    
     if (cleanVal.length === 5) {
-      setTimeout(() => nextStep(), 800);
+      setIsSubmitting(true);
+      const res = await onboardingService.verifyCode(formData.email, cleanVal);
+      setIsSubmitting(false);
+      
+      if (res.ok) {
+        setTimeout(() => nextStep(), 500);
+      } else {
+        alert(res.message || "Código inválido");
+        setVerifyCode("");
+      }
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Limpar erro ao digitar
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
@@ -81,19 +148,40 @@ export const AuthStep: React.FC = () => {
 
       {mode === "email" && emailStep === "form" && (
         <div className="max-w-[400px] mx-auto text-left animate-slide-up">
-          <Input label="Nome completo" placeholder="Seu nome" value={data.name} onChange={(e) => updateData({ name: e.target.value })} />
-          <Input label="E-mail" placeholder="seu@email.com" type="email" value={data.email} onChange={(e) => updateData({ email: e.target.value })} />
           <Input 
-            label="Senha" placeholder="Mínimo 8 caracteres" type="password" value={password} onChange={(e) => setPassword(e.target.value)} 
-            error={password && password.length < 8 ? `Mínimo 8 caracteres (${password.length}/8)` : undefined}
+            label="Nome completo" 
+            placeholder="Seu nome" 
+            value={formData.name} 
+            onChange={(e) => handleChange("name", e.target.value)} 
+            error={errors.name}
           />
           <Input 
-            label="Confirmar senha" placeholder="Repita a senha" type="password" value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)}
-            error={confirmPwd && password !== confirmPwd ? "As senhas não coincidem" : undefined}
+            label="E-mail" 
+            placeholder="seu@email.com" 
+            type="email" 
+            value={formData.email} 
+            onChange={(e) => handleChange("email", e.target.value)} 
+            error={errors.email}
+          />
+          <Input 
+            label="Senha" 
+            placeholder="Mínimo 8 caracteres" 
+            type="password" 
+            value={formData.password} 
+            onChange={(e) => handleChange("password", e.target.value)} 
+            error={errors.password}
+          />
+          <Input 
+            label="Confirmar senha" 
+            placeholder="Repita a senha" 
+            type="password" 
+            value={formData.confirmPwd} 
+            onChange={(e) => handleChange("confirmPwd", e.target.value)}
+            error={errors.confirmPwd}
           />
 
           {/* Captcha */}
-          <div className="mt-4 p-3.5 rounded-xl border-2 border-[#E2EDE7] bg-brand-offWhite flex items-center justify-between">
+          <div className={`mt-4 p-3.5 rounded-xl border-2 bg-brand-offWhite flex items-center justify-between ${!captchaChecked && errors.name ? 'border-red-200' : 'border-[#E2EDE7]'}`}>
             <div className="flex items-center gap-3">
               <div 
                 onClick={!captchaChecked ? handleCaptcha : undefined} 
@@ -110,12 +198,17 @@ export const AuthStep: React.FC = () => {
               <span className="text-[13px] text-brand-text">Não sou um robô</span>
             </div>
             <div className="text-right">
-              <svg width="28" height="28" viewBox="0 0 64 64"><path d="M32 2C15.4 2 2 15.4 2 32s13.4 30 30 30 30-13.4 30-30S48.6 2 32 2z" fill="#4A90D9" opacity="0.15"/><path d="M32 12c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20zm0 36c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" fill="#4A90D9"/><path d="M40 28l-8-6v4H24v4h8v4l8-6z" fill="#4A90D9"/></svg>
               <div className="text-[8px] text-brand-textLight">reCAPTCHA</div>
             </div>
           </div>
 
-          <Button onClick={handleSubmitForm} disabled={!formValid} className="w-full mt-4">Criar conta →</Button>
+          <Button 
+            onClick={handleSubmitForm} 
+            disabled={isSubmitting} 
+            className="w-full mt-4"
+          >
+            {isSubmitting ? "Processando..." : "Criar conta →"}
+          </Button>
         </div>
       )}
 
@@ -143,8 +236,9 @@ export const AuthStep: React.FC = () => {
               maxLength={5}
               className="w-full p-2.5 text-base text-center tracking-[4px] uppercase border-2 border-[#E2EDE7] rounded-[10px] outline-none font-semibold text-brand-greenDark focus:border-brand-green"
               autoFocus
+              disabled={isSubmitting}
             />
-            {verifyCode.length === 5 && <div className="mt-2.5 text-[13px] text-brand-greenMid font-semibold animate-fade-in">✓ Verificando código...</div>}
+            {isSubmitting && <div className="mt-2.5 text-[13px] text-brand-greenMid font-semibold animate-fade-in">Verificando...</div>}
             
             <div className="mt-5 pt-4 border-t border-[#EEF3F0]">
               <button className="bg-transparent border-none cursor-pointer text-brand-pastelBlue text-[13px] font-semibold underline hover:text-brand-pastelBlue/80">
@@ -157,7 +251,7 @@ export const AuthStep: React.FC = () => {
                <div>
                   <div className="text-[13px] font-bold text-[#8D6E00] mb-1">Não recebeu o código?</div>
                   <div className="text-[13px] text-[#A68400] leading-snug">
-                    <strong>Verifique sua caixa de SPAM ou Lixo Eletrônico.</strong> O e-mail pode ter sido direcionado para lá.
+                    <strong>Verifique sua caixa de SPAM ou Lixo Eletrônico.</strong>
                   </div>
                </div>
             </div>

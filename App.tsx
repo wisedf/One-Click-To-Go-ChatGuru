@@ -1,16 +1,25 @@
-import React from 'react';
+
+import React, { Suspense, lazy } from 'react';
 import { OnboardingProvider, useOnboarding } from './context/OnboardingContext';
 import { ProgressBar } from './components/ProgressBar';
 import { Logo } from './components/Logo';
-import { WelcomeStep } from './components/steps/WelcomeStep';
-import { AuthStep } from './components/steps/AuthStep';
-import { VerifyStep } from './components/steps/VerifyStep';
-import { PlanStep } from './components/steps/PlanStep';
-import { NicheStep } from './components/steps/NicheStep';
-import { ChannelConnectStep } from './components/steps/ChannelConnectStep';
-import { ChatbotStep } from './components/steps/ChatbotStep';
-import { CockpitStep } from './components/steps/CockpitStep';
-import { LiveStep } from './components/steps/LiveStep';
+
+// Lazy loading das etapas para reduzir bundle inicial (RNF-02)
+const WelcomeStep = lazy(() => import('./components/steps/WelcomeStep').then(module => ({ default: module.WelcomeStep })));
+const AuthStep = lazy(() => import('./components/steps/AuthStep').then(module => ({ default: module.AuthStep })));
+const VerifyStep = lazy(() => import('./components/steps/VerifyStep').then(module => ({ default: module.VerifyStep })));
+const PlanStep = lazy(() => import('./components/steps/PlanStep').then(module => ({ default: module.PlanStep })));
+const NicheStep = lazy(() => import('./components/steps/NicheStep').then(module => ({ default: module.NicheStep })));
+const ChannelConnectStep = lazy(() => import('./components/steps/ChannelConnectStep').then(module => ({ default: module.ChannelConnectStep })));
+const ChatbotStep = lazy(() => import('./components/steps/ChatbotStep').then(module => ({ default: module.ChatbotStep })));
+const CockpitStep = lazy(() => import('./components/steps/CockpitStep').then(module => ({ default: module.CockpitStep })));
+const LiveStep = lazy(() => import('./components/steps/LiveStep').then(module => ({ default: module.LiveStep })));
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-64">
+    <div className="w-8 h-8 border-4 border-brand-greenLight border-t-brand-green rounded-full animate-spin"></div>
+  </div>
+);
 
 const WizardContent: React.FC = () => {
   const { currentStep, prevStep, data } = useOnboarding();
@@ -56,8 +65,6 @@ const WizardContent: React.FC = () => {
       )}
 
       <div className={isLive ? "" : "max-w-[800px] mx-auto px-5 py-3 pb-10"}>
-        {/* Main Content Area */}
-        
         {/* Prominent Back Button */}
         {showBack && (
           <div className="mb-2">
@@ -70,7 +77,9 @@ const WizardContent: React.FC = () => {
           </div>
         )}
 
-        {renderStep()}
+        <Suspense fallback={<LoadingSpinner />}>
+          {renderStep()}
+        </Suspense>
       </div>
     </div>
   );
