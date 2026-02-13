@@ -69,6 +69,7 @@ const WizardContent: React.FC = () => {
         {showBack && (
           <div className="mb-2">
             <button 
+              id="btn-nav-back"
               onClick={prevStep}
               className="group flex items-center gap-1.5 text-xs font-semibold text-brand-textMuted hover:text-brand-greenDark transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-100 w-fit"
             >

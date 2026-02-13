@@ -24,7 +24,7 @@ declare global {
 }
 
 // Client ID fornecido
-const GOOGLE_CLIENT_ID = "17693720794-mg7711lmf9ka1ovu6smtk7bg2aceoh8o.apps.googleusercontent.com"; 
+const GOOGLE_CLIENT_ID = "760238419535-ors0dtndhr8f7lsgt7i10h1eb3b00149.apps.googleusercontent.com"; 
 
 export const AuthStep: React.FC = () => {
   const { nextStep, data, updateData } = useOnboarding();
@@ -194,7 +194,7 @@ export const AuthStep: React.FC = () => {
             <span className="text-xs text-brand-textLight">ou</span>
             <div className="flex-1 h-px bg-[#E2EDE7]"></div>
           </div>
-          <Button variant="outline" onClick={() => setMode("email")} className="py-3.5">✉️ Continuar com e-mail</Button>
+          <Button id="btn-auth-email-mode" variant="outline" onClick={() => setMode("email")} className="py-3.5">✉️ Continuar com e-mail</Button>
         </div>
       )}
 
@@ -217,6 +217,7 @@ export const AuthStep: React.FC = () => {
           <div className={`mb-5 p-3.5 rounded-xl border-2 bg-brand-offWhite flex items-center justify-between ${!captchaChecked ? 'border-[#E2EDE7]' : 'border-brand-green/50'}`}>
             <div className="flex items-center gap-3">
               <div 
+                id="chk-auth-captcha-google"
                 onClick={!captchaChecked ? handleCaptcha : undefined} 
                 className={`w-6 h-6 rounded flex items-center justify-center transition-all duration-300
                   ${captchaChecked ? 'bg-brand-green border-brand-green cursor-default' : 'bg-white border-2 border-[#C5D0CA] cursor-pointer'}
@@ -235,13 +236,14 @@ export const AuthStep: React.FC = () => {
             </div>
           </div>
 
-          <Button onClick={nextStep} disabled={!captchaChecked}>Continuar →</Button>
+          <Button id="btn-auth-google-continue" onClick={nextStep} disabled={!captchaChecked}>Continuar →</Button>
         </div>
       )}
 
       {mode === "email" && emailStep === "form" && (
         <div className="max-w-[400px] mx-auto text-left animate-slide-up">
           <Input 
+            id="input-auth-name"
             label="Nome completo" 
             placeholder="Seu nome" 
             value={formData.name} 
@@ -249,6 +251,7 @@ export const AuthStep: React.FC = () => {
             error={errors.name}
           />
           <Input 
+            id="input-auth-email"
             label="E-mail" 
             placeholder="seu@email.com" 
             type="email" 
@@ -257,6 +260,7 @@ export const AuthStep: React.FC = () => {
             error={errors.email}
           />
           <Input 
+            id="input-auth-password"
             label="Senha" 
             placeholder="Mínimo 8 caracteres" 
             type="password" 
@@ -265,6 +269,7 @@ export const AuthStep: React.FC = () => {
             error={errors.password}
           />
           <Input 
+            id="input-auth-confirm-password"
             label="Confirmar senha" 
             placeholder="Repita a senha" 
             type="password" 
@@ -277,6 +282,7 @@ export const AuthStep: React.FC = () => {
           <div className={`mt-4 p-3.5 rounded-xl border-2 bg-brand-offWhite flex items-center justify-between ${!captchaChecked && errors.name ? 'border-red-200' : 'border-[#E2EDE7]'}`}>
             <div className="flex items-center gap-3">
               <div 
+                id="chk-auth-captcha-email"
                 onClick={!captchaChecked ? handleCaptcha : undefined} 
                 className={`w-6 h-6 rounded flex items-center justify-center transition-all duration-300
                   ${captchaChecked ? 'bg-brand-green border-brand-green cursor-default' : 'bg-white border-2 border-[#C5D0CA] cursor-pointer'}
@@ -296,6 +302,7 @@ export const AuthStep: React.FC = () => {
           </div>
 
           <Button 
+            id="btn-auth-submit"
             onClick={handleSubmitForm} 
             disabled={isSubmitting} 
             className="w-full mt-4"
@@ -323,6 +330,7 @@ export const AuthStep: React.FC = () => {
               ))}
             </div>
             <input
+              id="input-auth-verify-code"
               value={verifyCode}
               onChange={(e) => handleVerifyCode(e.target.value)}
               placeholder="Ex: A3K9F"
@@ -334,7 +342,7 @@ export const AuthStep: React.FC = () => {
             {isSubmitting && <div className="mt-2.5 text-[13px] text-brand-greenMid font-semibold animate-fade-in">Verificando...</div>}
             
             <div className="mt-5 pt-4 border-t border-[#EEF3F0]">
-              <button className="bg-transparent border-none cursor-pointer text-brand-pastelBlue text-[13px] font-semibold underline hover:text-brand-pastelBlue/80">
+              <button id="btn-auth-resend-code" className="bg-transparent border-none cursor-pointer text-brand-pastelBlue text-[13px] font-semibold underline hover:text-brand-pastelBlue/80">
                 🔄 Reenviar código
               </button>
             </div>

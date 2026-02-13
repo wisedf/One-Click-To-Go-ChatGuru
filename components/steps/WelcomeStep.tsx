@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -50,7 +51,7 @@ export const WelcomeStep: React.FC = () => {
         ))}
       </div>
 
-      <Button onClick={nextStep}>Começar agora →</Button>
+      <Button id="btn-welcome-start" onClick={nextStep}>Começar agora →</Button>
       
       <div className="text-xs text-brand-textLight mt-3 flex flex-col gap-1 items-center animate-fade-in">
         <span className="font-medium">Leva menos de 5 minutos · Sem cartão de crédito</span>

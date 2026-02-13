@@ -28,6 +28,7 @@ export const NicheStep: React.FC = () => {
           return (
             <div 
               key={n.id} 
+              id={`card-niche-${n.id}`}
               onClick={() => updateData({ niche: n.id })}
               className={`p-4 rounded-[14px] cursor-pointer text-center transition-all duration-200
                 ${isSelected ? 'bg-brand-greenLight border-[2.5px] border-brand-green' : 'bg-white border-2 border-[#E2EDE7] hover:border-brand-greenLight'}
@@ -76,7 +77,7 @@ export const NicheStep: React.FC = () => {
       )}
 
       <div className="text-center">
-        <Button onClick={nextStep} disabled={!data.niche}>Aplicar e conectar WhatsApp →</Button>
+        <Button id="btn-niche-continue" onClick={nextStep} disabled={!data.niche}>Aplicar e conectar WhatsApp →</Button>
       </div>
     </div>
   );

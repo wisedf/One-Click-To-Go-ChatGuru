@@ -195,6 +195,7 @@ export const LiveStep: React.FC = () => {
           <span className="text-xs text-brand-greenLight opacity-80 hidden sm:inline-block">Você está visualizando uma simulação interativa da plataforma.</span>
         </div>
         <button 
+          id="btn-live-reset"
           onClick={resetOnboarding}
           className="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-brand-green transition-colors opacity-90 hover:opacity-100"
         >
@@ -396,7 +397,7 @@ export const LiveStep: React.FC = () => {
             {/* CHAT AREA */}
             <div className="flex-1 flex flex-col bg-[#efeae2] relative min-w-0">
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')" }}></div>
+              <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70fcded21.png')" }}></div>
 
               {/* Chat Header */}
               <div className={`h-[50px] bg-white border-b ${colors.panelBorder} flex items-center justify-between px-3 z-10 shadow-sm`}>
@@ -476,6 +477,7 @@ export const LiveStep: React.FC = () => {
                   </div>
                   <div className="flex-1 bg-white rounded-[8px] border border-white flex items-center px-3 py-1.5 shadow-sm focus-within:border-[#2DD4A0]">
                     <input 
+                      id="input-live-message"
                       value={inputVal}
                       onChange={(e) => setInputVal(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
@@ -485,7 +487,7 @@ export const LiveStep: React.FC = () => {
                   </div>
                   <div className="flex gap-3 text-gray-500 px-1 items-center">
                     <span className="cursor-pointer hover:text-gray-700 text-lg text-[#2DD4A0]"><Icons.Filter /></span>
-                    <button onClick={sendMessage} className="text-[#2DD4A0] hover:text-[#25b588]">
+                    <button id="btn-live-send" onClick={sendMessage} className="text-[#2DD4A0] hover:text-[#25b588]">
                         {inputVal ? <Icons.Send /> : <Icons.Mic />}
                     </button>
                   </div>

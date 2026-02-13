@@ -264,6 +264,7 @@ export const ChannelConnectStep: React.FC = () => {
               return (
                 <div
                   key={ch.id}
+                  id={`card-channel-${ch.id}`}
                   onClick={() => handleSelectChannel(ch.id)}
                   className={`flex-1 min-w-[200px] max-w-[230px] p-5 rounded-[20px] cursor-pointer text-center relative overflow-hidden transition-all duration-300
                     ${isActive ? 'transform -translate-y-1 z-10' : 'bg-white border-2 border-[#E2EDE7]'}
@@ -365,19 +366,20 @@ export const ChannelConnectStep: React.FC = () => {
                         <div className="mt-0.5">
                           <input 
                             type="checkbox" 
-                            id="terms" 
+                            id="chk-channel-terms" 
                             checked={termsAccepted} 
                             onChange={(e) => setTermsAccepted(e.target.checked)}
                             className="w-5 h-5 rounded border-gray-300 text-brand-green focus:ring-brand-green cursor-pointer accent-brand-green"
                           />
                         </div>
-                        <label htmlFor="terms" className="text-xs text-brand-textMuted cursor-pointer select-none leading-relaxed">
-                          Declaro que li e concordo com o <span onClick={(e) => { e.preventDefault(); setShowContract(true); }} className="text-brand-green font-bold hover:underline">Contrato de Prestação de Serviço</span> e as <span onClick={(e) => { e.preventDefault(); setShowRules(true); }} className="text-brand-green font-bold hover:underline">Regras de Uso</span>.
+                        <label htmlFor="chk-channel-terms" className="text-xs text-brand-textMuted cursor-pointer select-none leading-relaxed">
+                          Declaro que li e concordo com o <span id="link-channel-contract" onClick={(e) => { e.preventDefault(); setShowContract(true); }} className="text-brand-green font-bold hover:underline">Contrato de Prestação de Serviço</span> e as <span id="link-channel-rules" onClick={(e) => { e.preventDefault(); setShowRules(true); }} className="text-brand-green font-bold hover:underline">Regras de Uso</span>.
                         </label>
                       </div>
 
                       <div className="flex flex-col sm:flex-row items-center gap-4">
                         <Button
+                          id="btn-channel-continue"
                           onClick={handleContinueSelection}
                           disabled={!termsAccepted}
                           className={`w-full sm:w-auto px-8 ${!termsAccepted ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -564,6 +566,7 @@ export const ChannelConnectStep: React.FC = () => {
              </div>
 
              <button
+              id="btn-channel-waba-accept-web"
               onClick={acceptWebOffer}
               className="w-full p-4 px-6 text-base font-bold text-white bg-gradient-to-br from-brand-greenDark to-brand-greenMid border-none rounded-[14px] shadow-[0_6px_24px_rgba(45,212,160,0.4)] hover:brightness-105 transition-all"
              >
@@ -571,7 +574,7 @@ export const ChannelConnectStep: React.FC = () => {
              </button>
 
              <div className="text-center mt-3">
-               <button onClick={declineWebOffer} className="bg-transparent border-none cursor-pointer text-xs text-brand-textLight hover:text-brand-textMuted">
+               <button id="btn-channel-waba-decline-web" onClick={declineWebOffer} className="bg-transparent border-none cursor-pointer text-xs text-brand-textLight hover:text-brand-textMuted">
                  Não, prefiro aguardar apenas a API Oficial
                </button>
              </div>
@@ -624,7 +627,7 @@ export const ChannelConnectStep: React.FC = () => {
              </div>
           </div>
           
-          <Button onClick={nextStep}>Continuar para configurar chatbot →</Button>
+          <Button id="btn-channel-finish" onClick={nextStep}>Continuar para configurar chatbot →</Button>
         </div>
       </div>
     );
@@ -686,6 +689,7 @@ export const ChannelConnectStep: React.FC = () => {
                 </div>
 
                 <button 
+                  id="btn-channel-reload-qr"
                   onClick={reloadQrCode}
                   disabled={isReloadingQr}
                   className="text-[11px] text-brand-green font-semibold hover:text-brand-greenDark underline decoration-dotted transition-colors flex items-center gap-1"
@@ -708,6 +712,7 @@ export const ChannelConnectStep: React.FC = () => {
             {/* How to scan Accordion/Section */}
             <div className="mt-4 bg-brand-offWhite rounded-xl border border-[#E2EDE7] overflow-hidden">
                <button 
+                 id="btn-channel-tutorial-toggle"
                  onClick={() => setShowTutorial(!showTutorial)}
                  className="w-full p-3 flex items-center justify-center gap-2 text-xs font-semibold text-brand-textMuted hover:bg-gray-100 transition-colors"
                >
@@ -719,6 +724,7 @@ export const ChannelConnectStep: React.FC = () => {
                  <div className="p-4 pt-0 border-t border-[#E2EDE7] animate-slide-up bg-white">
                     <div className="flex justify-center gap-4 py-3">
                       <button 
+                        id="btn-channel-tutorial-android"
                         onClick={() => setTutorialDevice('android')}
                         className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-colors
                           ${tutorialDevice === 'android' ? 'bg-brand-green text-white border-brand-green' : 'bg-white text-gray-400 border-gray-200'}
@@ -727,6 +733,7 @@ export const ChannelConnectStep: React.FC = () => {
                         Android
                       </button>
                       <button 
+                        id="btn-channel-tutorial-iphone"
                         onClick={() => setTutorialDevice('iphone')}
                         className={`text-xs font-bold px-4 py-1.5 rounded-full border transition-colors
                           ${tutorialDevice === 'iphone' ? 'bg-brand-green text-white border-brand-green' : 'bg-white text-gray-400 border-gray-200'}
@@ -803,7 +810,7 @@ export const ChannelConnectStep: React.FC = () => {
 
       {connected && messages.length >= 3 && (
         <div className="mt-6 animate-fade-in">
-          <Button onClick={() => { updateData({ hasWebNumber: true }); nextStep(); }} className="bg-gradient-to-br from-brand-greenDark to-brand-greenMid">
+          <Button id="btn-channel-finish" onClick={() => { updateData({ hasWebNumber: true }); nextStep(); }} className="bg-gradient-to-br from-brand-greenDark to-brand-greenMid">
             🤖 Configurar chatbot →
           </Button>
         </div>

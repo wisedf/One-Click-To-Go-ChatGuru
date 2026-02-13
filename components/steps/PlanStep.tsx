@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -60,6 +61,7 @@ export const PlanStep: React.FC = () => {
           return (
             <div 
               key={plan.id}
+              id={`card-plan-${plan.id}`}
               onClick={() => updateData({ plan: plan.id })}
               className={`flex-1 min-w-[210px] max-w-[235px] p-5 rounded-[18px] cursor-pointer text-left transition-all duration-300 relative overflow-hidden
                 ${isSelected ? '' : 'bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)] border-2 border-[#E2EDE7]'}
@@ -104,7 +106,7 @@ export const PlanStep: React.FC = () => {
       </div>
 
       <div className="text-center mt-6">
-        <Button onClick={nextStep} disabled={!data.plan} className={!data.plan ? "opacity-40" : ""}>
+        <Button id="btn-plan-continue" onClick={nextStep} disabled={!data.plan} className={!data.plan ? "opacity-40" : ""}>
           Começar teste grátis →
         </Button>
 

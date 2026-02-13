@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -47,6 +48,7 @@ export const ChatbotStep: React.FC = () => {
             return (
               <div 
                 key={opt.id} 
+                id={`card-chatbot-${opt.id}`}
                 onClick={() => setSelected(opt.id as any)} 
                 className={`p-4 rounded-2xl cursor-pointer transition-all duration-200
                   ${isSelected ? 'bg-brand-greenLight border-[2.5px] border-brand-green shadow-sm' : 'bg-white border-2 border-[#E2EDE7]'}
@@ -75,6 +77,7 @@ export const ChatbotStep: React.FC = () => {
                 ) : (
                   <div className="mt-2 ml-9 animate-slide-up">
                     <textarea 
+                      id="input-chatbot-custom"
                       value={customMsg}
                       onChange={(e) => setCustomMsg(e.target.value)}
                       placeholder={`Ex: Olá! Que bom ter você aqui na ${companyName}.`}
@@ -89,7 +92,7 @@ export const ChatbotStep: React.FC = () => {
 
         {!activated ? (
           <div className="text-center">
-            <Button onClick={handleActivate} disabled={!selected || (selected === 'custom' && !customMsg.trim())}>
+            <Button id="btn-chatbot-activate" onClick={handleActivate} disabled={!selected || (selected === 'custom' && !customMsg.trim())}>
               🤖 Ativar chatbot de boas-vindas →
             </Button>
           </div>

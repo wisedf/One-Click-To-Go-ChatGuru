@@ -6,11 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="origin-when-cross-origin" />
     <title>ChatGuru - Onboarding</title>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WMFXK8FM');</script>
+    <!-- End Google Tag Manager -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
       tailwind.config = {
+        darkMode: 'class', // Desativa o modo dark automático baseado no sistema
         theme: {
           extend: {
             fontFamily: {
@@ -55,7 +63,11 @@
       }
     </script>
     <style>
-      body { background-color: #F7FAF8; }
+      /* Força cores claras independente do tema do sistema */
+      body { 
+        background-color: #F7FAF8; 
+        color: #2D3B35;
+      }
     </style>
   <script type="importmap">
 {
@@ -70,6 +82,10 @@
 </script>
 </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WMFXK8FM"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
   </body>
 </html>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useOnboarding } from '../../context/OnboardingContext';
 import { Button } from '../ui/Button';
@@ -70,7 +71,7 @@ export const CockpitStep: React.FC = () => {
              <div className="text-[13px] text-brand-textMuted my-2">
                Um cliente simulado já está entrando em contato. Vamos?
              </div>
-             <Button onClick={nextStep} variant="primary" className="mt-0 py-3 px-7 text-sm">💬 Atender meu primeiro cliente →</Button>
+             <Button id="btn-cockpit-start-live" onClick={nextStep} variant="primary" className="mt-0 py-3 px-7 text-sm">💬 Atender meu primeiro cliente →</Button>
            </ChatBubble>
         </div>
       </div>

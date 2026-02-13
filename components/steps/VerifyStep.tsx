@@ -68,6 +68,7 @@ export const VerifyStep: React.FC = () => {
                </div>
              </div>
              <input
+              id="input-verify-company"
               value={company}
               onChange={(e) => { setCompany(e.target.value); updateData({ companyName: e.target.value }); }}
               placeholder="Ex: Minha Loja, Consultório Dr..."
@@ -105,6 +106,7 @@ export const VerifyStep: React.FC = () => {
                  <span className="text-[#E2EDE7]">|</span>
                </div>
                <input
+                id="input-verify-phone"
                 value={phone}
                 onChange={handlePhone}
                 placeholder="(83) 99999-9999"
@@ -119,6 +121,7 @@ export const VerifyStep: React.FC = () => {
 
            {/* Consent - Mandatory */}
            <div 
+            id="chk-verify-consent"
             onClick={() => setAgreed(!agreed)}
             className={`flex items-start gap-2.5 p-2.5 rounded-[10px] cursor-pointer border-[1.5px] transition-all group
               ${agreed ? 'bg-brand-greenLight border-brand-green' : 'bg-brand-offWhite border-[#E2EDE7] hover:border-brand-greenMid'}
@@ -136,7 +139,7 @@ export const VerifyStep: React.FC = () => {
         </div>
 
         <div className="text-center mt-6">
-          <Button onClick={nextStep} disabled={!canContinue} className="w-full max-w-[440px]">
+          <Button id="btn-verify-continue" onClick={nextStep} disabled={!canContinue} className="w-full max-w-[440px]">
             Continuar para escolher o plano →
           </Button>
         </div>
