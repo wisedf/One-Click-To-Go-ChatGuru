@@ -51,7 +51,13 @@ export const WelcomeStep: React.FC = () => {
       </div>
 
       <Button onClick={nextStep}>Começar agora →</Button>
-      <p className="text-xs text-brand-textLight mt-2.5">Leva menos de 5 minutos · Sem cartão de crédito</p>
+      
+      <div className="text-xs text-brand-textLight mt-3 flex flex-col gap-1 items-center animate-fade-in">
+        <span className="font-medium">Leva menos de 5 minutos · Sem cartão de crédito</span>
+        <span className="text-[10px] bg-gray-100 px-3 py-1 rounded-full text-brand-textMuted/80 border border-gray-200">
+          🔒 Nenhuma forma de pagamento é solicitada para testar
+        </span>
+      </div>
     </div>
   );
 };
