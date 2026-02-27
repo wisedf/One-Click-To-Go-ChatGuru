@@ -27,9 +27,9 @@ export const VerifyStep: React.FC = () => {
   
   // Validation Rules:
   // 1. Phone must have at least 10 digits (DDD + Number)
-  // 2. Company name must be longer than 3 characters AND max 300
+  // 2. Company name must be at least 3 characters AND max 250
   // 3. Consent checkbox must be checked
-  const canContinue = phoneDigits.length >= 10 && company.trim().length > 3 && company.length <= 300 && agreed;
+  const canContinue = phoneDigits.length >= 10 && company.trim().length >= 3 && company.length <= 250 && agreed;
 
   return (
     <div className="py-4 animate-fade-in">
@@ -72,15 +72,15 @@ export const VerifyStep: React.FC = () => {
               value={company}
               onChange={(e) => { setCompany(e.target.value); updateData({ companyName: e.target.value }); }}
               placeholder="Ex: Minha Loja, Consultório Dr..."
-              maxLength={300}
+              maxLength={250}
               className="w-full py-3 px-4 text-sm font-medium rounded-xl outline-none transition-colors border-2 border-[#E2EDE7] focus:border-brand-greenMid"
              />
              <div className="flex justify-between items-center mt-1 ml-1">
-               {company.length > 0 && company.length <= 3 && (
-                 <div className="text-[10px] text-red-400">O nome deve ter mais de 3 caracteres.</div>
+               {company.length > 0 && company.length < 3 && (
+                 <div className="text-[10px] text-red-400">O nome deve ter no mínimo 3 caracteres.</div>
                )}
-               <div className={`text-[10px] ml-auto ${company.length >= 300 ? 'text-red-400 font-bold' : 'text-gray-300'}`}>
-                 {company.length}/300
+               <div className={`text-[10px] ml-auto ${company.length >= 250 ? 'text-red-400 font-bold' : 'text-gray-300'}`}>
+                 {company.length}/250
                </div>
              </div>
            </div>
